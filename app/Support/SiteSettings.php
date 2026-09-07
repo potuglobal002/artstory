@@ -22,7 +22,15 @@ class SiteSettings
         }
 
         try {
-            $attributes = Cache::remember('settings.site', now()->addMinutes(30), fn (): array => SiteSetting::current()->attributesToArray());
+            $attributes = Cache::remember('settings.site', now()->addMinutes(30), fn (): array => SiteSetting::current()->getAttributes());
+
+            // Older cached settings used attributesToArray(), which turns JSON
+            // columns into PHP arrays. setRawAttributes() requires database JSON.
+            foreach (['footer_section_links', 'footer_collector_links'] as $attribute) {
+                if (is_array($attributes[$attribute] ?? null)) {
+                    $attributes[$attribute] = json_encode($attributes[$attribute]);
+                }
+            }
 
             return static::$current = (new SiteSetting)->setRawAttributes($attributes, true);
         } catch (Throwable) {
