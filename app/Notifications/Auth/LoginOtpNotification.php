@@ -25,7 +25,7 @@ class LoginOtpNotification extends Notification
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-            ->subject('Your STS Institute login OTP')
+            ->subject('Your ART Story login OTP')
             ->greeting('Hello ' . ($notifiable->name ?? 'there') . ',')
             ->line('Use this OTP to complete your dashboard login:')
             ->line($this->code)
