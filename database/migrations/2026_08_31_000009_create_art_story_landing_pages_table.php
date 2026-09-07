@@ -40,6 +40,30 @@ return new class extends Migration
             });
         }
 
+        // Some deployments already have the original landing_pages table. Add
+        // the fields used by the seed below before creating its default record.
+        Schema::table('landing_pages', function (Blueprint $table): void {
+            if (! Schema::hasColumn('landing_pages', 'featured_artwork_ids')) {
+                $table->json('featured_artwork_ids')->nullable()->after('programs');
+            }
+
+            if (! Schema::hasColumn('landing_pages', 'featured_artist_ids')) {
+                $table->json('featured_artist_ids')->nullable()->after('featured_artwork_ids');
+            }
+
+            if (! Schema::hasColumn('landing_pages', 'exhibition_section')) {
+                $table->json('exhibition_section')->nullable()->after('featured_artist_ids');
+            }
+
+            if (! Schema::hasColumn('landing_pages', 'exhibition_image_path')) {
+                $table->string('exhibition_image_path')->nullable()->after('exhibition_section');
+            }
+
+            if (! Schema::hasColumn('landing_pages', 'event_section')) {
+                $table->json('event_section')->nullable()->after('exhibition_image_path');
+            }
+        });
+
         LandingPage::query()->firstOrCreate([], LandingPage::defaults());
     }
 
